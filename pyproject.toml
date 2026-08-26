@@ -1,0 +1,23 @@
+[project]
+name = "farfuntool"
+version = "0.6.24"
+description = "farfuntool"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [
+    { name = "牛哥", email = "farfarfun@qq.com" },
+]
+dependencies = [
+    "cryptography",
+    "funsecret>=1.4.84",
+    "ipywidgets",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["funtool"]
