@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-name=notetool
+name=funtool
 echo $name
 
 if [ "$1" = "build" ]; then
