@@ -2,7 +2,7 @@ import datetime
 import logging
 import time
 
-from notetool.tool.log import logger
+from ..log import logger
 
 logger.setLevel(logging.DEBUG)
 

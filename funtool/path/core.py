@@ -1,7 +1,7 @@
 import os
 import shutil
 
-from notetool.log import logger
+from ..log import logger
 
 
 def info(msg):

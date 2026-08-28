@@ -4,7 +4,7 @@ from threading import Lock
 from time import sleep
 
 import numpy as np
-from notetool.tool import delete_file, exists_file, log, path_parse
+from ..tool import delete_file, exists_file, log, path_parse
 from requests import Session
 from tqdm import tqdm
 

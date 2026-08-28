@@ -3,7 +3,7 @@ import threading
 from queue import Queue
 from threading import Thread, Event
 
-from notetool.tool.log import log
+from ..log import log
 
 
 class Node(Thread):

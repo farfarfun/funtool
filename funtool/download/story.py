@@ -11,7 +11,7 @@ import requests
 from Crypto.Cipher import AES
 from requests.adapters import HTTPAdapter
 
-from notetool.tool import log
+from ..tool import log
 
 logger = log('download')
 headers = {

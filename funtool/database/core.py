@@ -7,7 +7,7 @@ from typing import List
 
 import pandas as pd
 
-from notetool.tool import log
+from ..log import log
 
 logging.basicConfig(format='%(asctime)s - [line:%(lineno)d] - %(levelname)s: %(message)s')
 

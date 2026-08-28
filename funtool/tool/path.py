@@ -1,6 +1,6 @@
 import os
 
-from notetool.tool import logger
+from ..log import logger
 
 
 def info(msg):
