@@ -1,4 +1,4 @@
-from notetool.logtool import log
+from funtool.logtool import log
 
 
 def log_level():

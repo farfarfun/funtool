@@ -5,7 +5,7 @@ import time
 #     level=logging.INFO,
 #     format='%(asctime)s - %(process)d-%(processName)s - %(filename)s-%(funcName)s[line:%(lineno)d] - %(levelname)s: %(message)s',
 #     #datefmt='%Y-%m-%d %H:%M:%S',
-#     # filename='notejob.log',
+#     # filename='funtool.log',
 #     # filemode='a'
 # )
 

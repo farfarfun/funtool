@@ -1,4 +1,4 @@
-from notetool import SecretManage, encrypt, decrypt
+from funtool import SecretManage, encrypt, decrypt
 
 secret = SecretManage()
 v = secret.read("drive", "lanzou", 'phpdisk_info')

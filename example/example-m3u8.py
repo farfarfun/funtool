@@ -1,7 +1,7 @@
-from notetool.download.m3u8 import m3u8Dataset
-from notetool.download.m3u8 import m3u8Downloader
+from funtool.download.m3u8 import m3u8Dataset
+from funtool.download.m3u8 import m3u8Downloader
 
-from notetool.tool import set_secret_path
+from funtool.tool import set_secret_path
 
 set_secret_path('/Users/liangtaoniu/workspace/MyDiary/tmp/tmpfile/m3u8-key')
 db_path = '/Users/liangtaoniu/workspace/MyDiary/tmp/tmpfile/m3u8-list.db'
@@ -47,7 +47,7 @@ def download():
     url = 'https://1252524126.vod2.myqcloud.com/9764a7a5vodtransgzp1252524126/5d4fc7d35285890805676406366/drm/v.f230.m3u8'
     # url = "https://1252524126.vod2.myqcloud.com/9764a7a5vodtransgzp1252524126/5d4fc7d35285890805676406366/drm/v.f230.ts?start=0&end=1190607&type=mpegts&time=1595843697088"
     downloader = m3u8Downloader()
-    downloader.start(url, '/Users/liangtaoniu/workspace/MyDiary/notechats/notetool/example/tmp', 'test.mp4')
+    downloader.start(url, '/Users/liangtaoniu/workspace/MyDiary/farfarfun/funtool/example/tmp', 'test.mp4')
 
 
 #

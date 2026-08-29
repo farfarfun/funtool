@@ -1,3 +1,3 @@
-from notetool.pathtool import join_path
+from funtool.pathtool import join_path
 
 print(join_path('a'))
