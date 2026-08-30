@@ -1,6 +1,6 @@
 .buildozer
-/notetool/app/.buildozer/
-/notetool/app/bin/
+/funtool/app/.buildozer/
+/funtool/app/bin/
 /example/tmp/
 *.pyc
 
