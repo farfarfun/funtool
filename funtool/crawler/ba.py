@@ -1,57 +1,41 @@
-import demjson
+"""需要登录态的商品请求工具。"""
+
+import json
+import os
+
 import requests
 
 
 class BodyGuardPharm:
+    """调用商品接口，登录 cookie 只能通过环境变量注入。"""
+
     headers = {
-        'Connection': 'keep-alive',
-        'Accept': '*/*',
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Mobile Safari/537.36',
-        'X-Requested-With': 'XMLHttpRequest',
-        'Sec-Fetch-Site': 'same-origin',
-        'Sec-Fetch-Mode': 'cors',
-        'Sec-Fetch-Dest': 'empty',
-        'Referer': 'https://www.ba.de/',
-        'Accept-Language': 'zh-CN,zh;q=0.9',
+        "Connection": "keep-alive",
+        "Accept": "*/*",
+        "User-Agent": "Mozilla/5.0",
+        "X-Requested-With": "XMLHttpRequest",
+        "Referer": "https://www.ba.de/",
     }
 
-    cookies = {
-        'bfd_tma': '1117bc1791847d562bad71c8c70f9f7f.43982155.1603383362000',
-        'bfd_tmd': '1117bc1791847d562bad71c8c70f9f7f.94043204.1603383362000',
-        'frontend': 'IOUG3TTU3MVV7LC4IALOUVXRZ4XWYTRCXK6WMG6FCFLMV4Z27LZQ',
-        '_uuid': '3295CD0F-94D4-4909-BE27-4577A16FC41D',
-        '_itag': '1.33.10292.8051.85441',
-        'Hm_lvt_2d4ccea8e83c69adfe112abcbb762893': '1604716003,1605109337,1606130420',
-        'SA_SEARCH_FIRST_PAGE_SIZE': '40',
-        'SA_SEARCH_FIRST_SORT': '0',
-        'sensorsdata2015jssdkcross': '%7B%22distinct_id%22%3A%2233-662736%22%2C%22%24device_id%22%3A%22175511884cad-089ea9aba34d97-163f6152-1296000-175511884cbf7%22%2C%22props%22%3A%7B%22%24latest_traffic_source_type%22%3A%22%E7%9B%B4%E6%8E%A5%E6%B5%81%E9%87%8F%22%2C%22%24latest_referrer%22%3A%22%22%2C%22%24latest_search_keyword%22%3A%22%E6%9C%AA%E5%8F%96%E5%88%B0%E5%80%BC_%E7%9B%B4%E6%8E%A5%E6%89%93%E5%BC%80%22%7D%2C%22first_id%22%3A%22175511884cad-089ea9aba34d97-163f6152-1296000-175511884cbf7%22%7D',
-        'LAST_SEARCH': '%7B%22search_page_num%22%3A%221%22%2C%22search_keyword%22%3A%22dolormin%22%2C%22search_result_num%22%3A%2217%22%2C%22is_first_search%22%3Atrue%2C%22search_filter%22%3Afalse%7D',
-        'bfd_sid': '0c78d3a4b982d0df63d018647e8a6b5e',
-        'bfd_tmc': '1117bc1791847d562bad71c8c70f9f7f.65408274.1606466124000',
-        'cart_item_count': '11',
-        'SA_RECOMMEND_INFO': '%7B%2206946190%22%3A%7B%22i%22%3A%22favorites-guessYouLike%22%2C%22s%22%3A%22baifendian%22%7D%7D',
-        'Hm_lpvt_2d4ccea8e83c69adfe112abcbb762893': '1606466908',
-    }
+    def __init__(self, cookies: dict[str, str] | None = None):
+        """创建客户端；未传 cookie 时读取 `FUNTOOL_BA_COOKIES` JSON。"""
+        raw = os.getenv("FUNTOOL_BA_COOKIES", "{}")
+        try:
+            configured = json.loads(raw)
+        except json.JSONDecodeError as error:
+            raise ValueError("FUNTOOL_BA_COOKIES 必须是 JSON 对象") from error
+        if not isinstance(configured, dict):
+            raise ValueError("FUNTOOL_BA_COOKIES 必须是 JSON 对象")
+        self.cookies = cookies if cookies is not None else configured
 
-    def __init__(self):
-        pass
-
-    def add_cart(self, product_id=169826, qty=1):
-        params = {
-            'product_id': product_id,
-            'qty': qty
-        }
-
-        response = requests.get('https://www.ba.de/v2/item/add',
-                                headers=self.headers,
-                                params=params,
-                                cookies=self.cookies)
-
-        return demjson.decode(response.text)
-
-
-def test():
-    ba = BodyGuardPharm()
-    ba.add_cart()
-    ba.add_cart(product_id=44434)
-    ba.add_cart(product_id=44435)
+    def add_cart(self, product_id: int = 169826, qty: int = 1) -> dict:
+        """把商品加入购物车并返回服务端 JSON。"""
+        response = requests.get(
+            "https://www.ba.de/v2/item/add",
+            headers=self.headers,
+            params={"product_id": product_id, "qty": qty},
+            cookies=self.cookies,
+            timeout=30,
+        )
+        response.raise_for_status()
+        return response.json()

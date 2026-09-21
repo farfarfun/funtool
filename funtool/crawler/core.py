@@ -1,4 +1,3 @@
-import logging
 import threading
 from queue import Queue
 from threading import Thread, Event
@@ -14,7 +13,6 @@ class Node(Thread):
     def __init__(self, interval=10, queue_size=2):
         Thread.__init__(self)
         self.logger = log("crawler")
-        self.logger.setLevel(logging.INFO)
 
         self.interval = interval
 
@@ -31,8 +29,9 @@ class Node(Thread):
         while not self.finished.is_set():
             try:
                 self.job()
-            except Exception as e:
-                print("job run error {}".format(e))
+            except Exception:
+                self.logger.exception("爬虫任务执行失败")
+                raise
             self.finished.wait(self.interval)
 
     def job(self):

@@ -1,14 +1,6 @@
-import logging
 import time
 
-# logging.basicConfig(
-#     level=logging.INFO,
-#     format='%(asctime)s - %(process)d-%(processName)s - %(filename)s-%(funcName)s[line:%(lineno)d] - %(levelname)s: %(message)s',
-#     #datefmt='%Y-%m-%d %H:%M:%S',
-#     # filename='funtool.log',
-#     # filemode='a'
-# )
-
+from farlog import getLogger
 
 def get_lapse_time(run_time):
     gap_h = run_time // 3600
@@ -26,8 +18,7 @@ def get_lapse_time(run_time):
 
 class LogTool:
     def __init__(self):
-        self.logger = logging.getLogger("nm_flow")
-        self.logger.setLevel(logging.DEBUG)
+        self.logger = getLogger("nm_flow")
 
         self.record_msg = ""
         self.record_time = time.time()
@@ -84,19 +75,15 @@ class LogTool:
     def error(self, msg, record=True, before=False, *args, **kwargs):
         self.run("error", msg, record=record, before=before, *args, **kwargs)
 
-    def setLevel(self, level):
-        self.logger.setLevel(level)
+def log(name=None):
+    """返回组织统一日志器。"""
+    return getLogger(name or "funtool")
 
 
-def log(name=None) -> logging.Logger:
-    _log = logging.getLogger(name)
-    return _log
+def load_log(name=None):
+    """返回组织统一日志器。"""
+    return getLogger(name or "funtool")
 
 
-def load_log(name=None) -> logging.Logger:
-    _log = logging.getLogger(name)
-    return _log
-
-
-logger = logging.getLogger("farfarfun")
+logger = getLogger("funtool")
 log_tool = LogTool()

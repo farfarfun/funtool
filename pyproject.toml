@@ -1,7 +1,7 @@
 [project]
 name = "farfuntool"
 version = "0.6.26"
-description = "farfuntool"
+description = "farfarfun 的 Python 工具集，提供下载、爬虫、路径、时间和数据库辅助 API。"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
@@ -10,10 +10,27 @@ authors = [
     { name = "牛哥", email = "farfarfun@qq.com" },
 ]
 dependencies = [
-    "cryptography",
+    "beautifulsoup4>=4.12",
+    "demjson3>=3.0.6",
+    "farlog>=1.1",
+    "feedparser>=6.0",
     "funsecret>=1.4.84",
-    "ipywidgets",
+    "ipython>=8.0",
+    "ipywidgets>=8.0",
+    "lxml>=5.0",
+    "numpy>=2.0; python_version >= '3.13'",
+    "numpy>=1.24; python_version < '3.13'",
+    "pandas>=2.0",
+    "pycryptodome>=3.19",
+    "psutil>=5.9",
+    "requests>=2.31",
+    "six>=1.16",
+    "tqdm>=4.66",
 ]
+
+[project.optional-dependencies]
+everything = ["matplotlib>=3.7", "mxnet>=1.9; python_version < '3.13'"]
+download = ["pycurl>=7.45", "rarfile>=4.1"]
 
 [dependency-groups]
 dev = ["pytest>=8.0.0"]

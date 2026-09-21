@@ -1,4 +1,3 @@
-import logging
 import os
 import sqlite3
 import time
@@ -9,17 +8,14 @@ import pandas as pd
 
 from ..log import log
 
-logging.basicConfig(format='%(asctime)s - [line:%(lineno)d] - %(levelname)s: %(message)s')
-
-
 class BaseTable:
     def __init__(self, table_name='default_table', columns=None):
         self.table_name = table_name
         self.columns = columns
         self.logger = log(table_name)
 
-    def execute(self, sql):
-        raise Exception("还没有实现")
+    def execute(self, sql: str):
+        raise NotImplementedError("子类必须实现 execute")
 
     def insert(self, properties: dict):
         properties = self.encode(properties)
@@ -105,22 +101,22 @@ class SqliteTable(BaseTable):
         self.conn = sqlite3.connect(self.db_path, check_same_thread=False)
         self.cursor = self.conn.cursor()
 
-    def execute(self, sql):
+    def execute(self, sql: str):
         try:
             rows = self.cursor.execute(sql)
             self.conn.commit()
             return rows
-        except Exception as e:
-            print("{}  with error:{}".format(sql, e))
-            return
+        except sqlite3.Error:
+            self.logger.exception("执行 SQL 失败: {}", sql)
+            raise
 
-    def execute_without_commit(self, sql):
+    def execute_without_commit(self, sql: str):
         try:
             rows = self.cursor.execute(sql)
             return rows
-        except Exception as e:
-            print("{}  with error:{}".format(sql, e))
-            return
+        except sqlite3.Error:
+            self.logger.exception("执行 SQL 失败: {}", sql)
+            raise
 
     def close(self):
         self.cursor.close()

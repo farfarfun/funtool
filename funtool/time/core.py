@@ -1,10 +1,7 @@
 import datetime
-import logging
 import time
 
 from ..log import logger
-
-logger.setLevel(logging.DEBUG)
 
 _DAY_SECOND = 24 * 60 * 60
 _HOUR_SECOND = 60 * 60
