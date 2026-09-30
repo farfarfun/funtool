@@ -2,7 +2,6 @@ import os
 import sqlite3
 import time
 from time import strftime
-from typing import List
 
 import pandas as pd
 
@@ -64,7 +63,7 @@ class BaseTable:
 
     def _properties2kv(self, properties: dict):
         if self.columns is None:
-            raise Exception("origin_keys cannot be None")
+            raise ValueError("columns cannot be None")
         keys = []
         values = []
         for key in self.columns:
@@ -76,7 +75,7 @@ class BaseTable:
 
     def _properties2equal(self, properties: dict):
         if self.columns is None:
-            raise Exception("origin_keys cannot be None")
+            raise ValueError("columns cannot be None")
         equals = []
         for key in self.columns:
             value = properties.get(key, None)
@@ -144,7 +143,7 @@ class SqliteTable(BaseTable):
     def vacuum(self):
         self.execute("VACUUM")
 
-    def insert_list(self, property_list: List[dict]):
+    def insert_list(self, property_list: list[dict]):
         values = [tuple([properties.get(key, '') for key in self.columns]) for properties in property_list]
         sql = "insert or ignore into {} values ({})".format(self.table_name, ','.join(['?'] * len(self.columns)))
 

@@ -1,19 +1,16 @@
-# funtool
+# fartool
 
-`funtool` 是 farfarfun 的 Python 工具集，提供下载、爬虫、路径、时间和数据库辅助 API。
-
-> ⚠️ PyPI 上的 `funtool` 这个名字已被无关第三方项目占用（[pjanis/funtool](https://github.com/pjanis/funtool)），
-> **不要** `pip install funtool`，本仓库真正的发布名是 `farfuntool`。
+`fartool` 是 farfarfun 的 Python 工具集，提供下载、爬虫、路径、时间和数据库辅助 API。
 
 ```bash
-uv add farfuntool
+uv add fartool
 ```
 
 ## 最小示例
 
 ```python
-from funtool.time import now2time
-from funtool.path import path_parse
+from fartool.time import now2time
+from fartool.path import path_parse
 
 print(now2time())
 print(path_parse("README.md"))

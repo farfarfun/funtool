@@ -77,13 +77,13 @@ class LogTool:
 
 def log(name=None):
     """返回组织统一日志器。"""
-    return getLogger(name or "funtool")
+    return getLogger(name or "fartool")
 
 
 def load_log(name=None):
     """返回组织统一日志器。"""
-    return getLogger(name or "funtool")
+    return getLogger(name or "fartool")
 
 
-logger = getLogger("funtool")
+logger = getLogger("fartool")
 log_tool = LogTool()

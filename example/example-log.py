@@ -1,4 +1,4 @@
-from funtool.logtool import log
+from fartool.logtool import log
 
 
 def log_level():

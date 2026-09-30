@@ -1,4 +1,4 @@
-from funtool.download import MultiThreadDownload
+from fartool.download import MultiThreadDownload
 
 downer = MultiThreadDownload()
 downer.download('http://www.cjcp.org.cn/CN/article/downloadArticleFile.do?attachType=PDF&id=95',

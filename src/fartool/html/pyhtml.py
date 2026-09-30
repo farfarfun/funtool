@@ -70,7 +70,7 @@ class Tag(six.with_metaclass(TagMeta, object)):  # type: ignore
         assert ((bool(children) ^ bool(attributes)) or (not children and not attributes))
 
         if self.self_closing and children:
-            raise Exception("Self closing tag can't have children")
+            raise ValueError("Self closing tag can't have children")
 
         self.children = children
 
@@ -82,7 +82,7 @@ class Tag(six.with_metaclass(TagMeta, object)):  # type: ignore
 
     def __call__(self, *children, **options):
         if self.self_closing:
-            raise Exception("Self closing tag can't have children")
+            raise ValueError("Self closing tag can't have children")
 
         _safe = options.pop('_safe', None)
         if _safe is not None:
