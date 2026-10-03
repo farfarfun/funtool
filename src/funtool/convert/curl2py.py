@@ -1,3 +1,5 @@
+# 本文件的 curl 命令解析逻辑改写自 https://github.com/spulec/uncurl
+# （Apache License 2.0，原始版权 © 2012 Steve Pulec），详见仓库 README「第三方代码」一节。
 import argparse
 import json
 import re

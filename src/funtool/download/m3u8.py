@@ -1,4 +1,3 @@
-# coding: utf-8
 import os
 import queue
 import sqlite3
@@ -11,7 +10,7 @@ import requests
 from Crypto.Cipher import AES
 from requests.adapters import HTTPAdapter
 
-from ..tool import log
+from ..log import log
 
 logger = log('download')
 headers = {
@@ -36,8 +35,13 @@ def get_session(pool_connections, pool_maxsize, max_retries):
     return session
 
 
+def get_ts_filename(url):
+    file_name = url.split('/')[-1].split('?')[0] + '-' + url.split('?')[1].split('&')[0].split('=')[1]
+    return file_name
+
+
 class m3u8Dataset:
-    def __init__(self, db_path='story_resource.table', table_name='movie_m3u8'):
+    def __init__(self, db_path='m3u8.list', table_name='movie_m3u8'):
         self.db_path = db_path
 
         self.conn = sqlite3.connect(self.db_path)
@@ -189,7 +193,7 @@ class m3u8File:
 
         with open(file_output, 'wb') as outfile:
             for index in range(0, self.count_total):
-                file_name = self.ts_list[index].split('/')[-1].split('?')[0]
+                file_name = get_ts_filename(self.ts_list[index])  # self.ts_list[index].split('/')[-1].split('?')[0]
                 file_input = os.path.join(self.ts_path, file_name)
 
                 self.show_progress()
@@ -238,7 +242,7 @@ class m3u8Downloader:
                     file.queue_lock.release()
                     # logger.info("%s 使用了 %s" % (threadName, data) + '\n', end='')
                     url = data
-                    file_name = url.split('/')[-1].split('?')[0]
+                    file_name = get_ts_filename(url)
                     file_path = os.path.join(self.file.ts_path, file_name)
                     if os.path.exists(file_path):
                         file.show_progress()
@@ -257,15 +261,17 @@ class m3u8Downloader:
                                         f.write(r.content)
                                 file.show_progress()
                                 break
-                        except Exception as e:
+                        except (requests.RequestException, OSError) as e:
                             retry -= 1
+                            logger.warning("下载分片失败，剩余重试次数 {}: {} ({})", retry, url, e)
                     if retry == 0:
-                        print('[FAIL]%s' % url)
+                        logger.error("下载分片彻底失败: {}", url)
                 else:
                     file.queue_lock.release()
 
     def get_real_url(self, m3u8_url):
-        r = self.session.get(m3u8_url, timeout=10)
+        r = self.session.get(m3u8_url, timeout=100)
+        result = ''
         if r.ok:
             body = r.content.decode()
             if body:
@@ -275,9 +281,12 @@ class m3u8Downloader:
                     if n and not n.startswith("#"):
                         ts_url = urllib.parse.urljoin(m3u8_url, n.strip())
                 if ts_url != '':
-                    return ts_url
+                    result = ts_url
         else:
-            print(r.status_code)
+            logger.error("获取 m3u8 真实地址失败，状态码: {}", r.status_code)
+        if '.ts' in result:
+            result = m3u8_url
+        return result
 
     def download(self, file: m3u8File):
         threads = []
@@ -309,10 +318,10 @@ class m3u8Downloader:
         file = m3u8File(url=real_url, origin=m3u8_url, file_name=video_name, file_dir=file_dir, queue_size=96)
         self.start_file(file)
 
-    def start_file(self, file: m3u8File):
+    def start_file(self, file: m3u8File, cookies=None):
         self.file = file
 
-        r = self.session.get(self.file.url, timeout=10, headers=headers)
+        r = self.session.get(self.file.url, timeout=100, headers=headers, cookies=cookies)
 
         if r.ok:
             body = r.content.decode()
@@ -324,16 +333,18 @@ class m3u8Downloader:
                         method_pos = line.find("METHOD")
                         comma_pos = line.find(",")
                         method = line[method_pos:comma_pos].split('=')[1]
-                        print("Decode Method：", method)
+                        # print("Decode Method：", method)
 
                         uri_pos = line.find("URI")
                         quotation_mark_pos = line.rfind('"')
                         key_path = line[uri_pos:quotation_mark_pos].split('"')[1]
 
-                        key_url = file.url.rsplit("/", 1)[0] + "/" + key_path  # 拼出key解密密钥URL
+                        # 拼出key解密密钥URL
+                        key_url = key_path if key_path.startswith('http') else file.url.rsplit("/", 1)[
+                                                                                   0] + "/" + key_path
                         res = requests.get(key_url, headers=headers)
                         file.key = res.content
-                        print("key：", file.key)
+                        # print("key：", file.key)
 
                     if line and not line.startswith("#"):
                         file.ts_list.append(urllib.parse.urljoin(file.url, line.strip()))
@@ -350,6 +361,6 @@ class m3u8Downloader:
                         info("下载完成")
 
                     else:
-                        logger.warn('下载失败')
+                        logger.warning('下载失败')
         else:
             logger.error(r)

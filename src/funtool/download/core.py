@@ -101,7 +101,7 @@ class PyCurlDownLoad(BaseDownLoad):
             import pycurl
         except ImportError as exc:
             raise DownloadError(
-                "pycurl 后端未安装，请执行 `pip install fartool[download]`"
+                "pycurl 后端未安装，请执行 `pip install farfuntool[download]`"
             ) from exc
 
         try:

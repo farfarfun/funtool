@@ -1,5 +1,5 @@
 def test_import():
-    import fartool  # noqa: F401
+    import funtool  # noqa: F401
 
 
 def test_paper_import_has_no_network_side_effects(monkeypatch):
@@ -9,4 +9,4 @@ def test_paper_import_has_no_network_side_effects(monkeypatch):
         raise AssertionError("导入模块时不应发起网络请求")
 
     monkeypatch.setattr(requests, "get", fail_request)
-    from fartool.paper import Paper  # noqa: F401
+    from funtool.paper import Paper  # noqa: F401

@@ -35,6 +35,8 @@ def path_join(parent_path, child_path):
 
 
 def join_path(child_path, parent_path=None):
+    if parent_path is None:
+        return path_parse(child_path)
     return path_join(parent_path, child_path)
 
 
