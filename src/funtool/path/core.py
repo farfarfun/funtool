@@ -1,26 +1,31 @@
+from __future__ import annotations
+
 import os
 import shutil
 
 from ..log import logger
 
 
-def info(msg):
+def info(msg: object) -> None:
+    """把 ``msg`` 转发给模块级 logger 记录为 info 级别日志。"""
     logger.info(msg)
 
 
-def rename(src, dst):
+def rename(src: str, dst: str) -> None:
+    """若 ``src`` 存在则重命名为 ``dst``，否则记录错误日志。"""
     if os.path.exists(src):
-        return os.rename(src, dst)
+        os.rename(src, dst)
     else:
         logger.error("{} not exist!".format(src))
-        return
 
 
-def removedirs(name):
+def removedirs(name: str) -> None:
+    """递归删除目录 ``name`` 及其全部内容。"""
     shutil.rmtree(name)
 
 
-def path_parse(path):
+def path_parse(path: str | None) -> str | None:
+    """展开 ``~`` 并把相对路径解析为相对当前工作目录的绝对路径；``None`` 原样返回。"""
     if path is None:
         return path
     # ~处理
@@ -30,31 +35,47 @@ def path_parse(path):
     return path
 
 
-def path_join(parent_path, child_path):
+def path_join(parent_path: str, child_path: str) -> str:
+    """把 ``child_path`` 拼接到解析后的 ``parent_path`` 之后。"""
     return os.path.join(path_parse(parent_path), child_path)
 
 
-def join_path(child_path, parent_path=None):
+def join_path(child_path: str, parent_path: str | None = None) -> str:
+    """
+    拼接路径；省略 ``parent_path`` 时直接按当前工作目录解析 ``child_path``。
+
+    :param child_path: 子路径。
+    :param parent_path: 父路径，省略时回退为当前工作目录。
+    """
     if parent_path is None:
         return path_parse(child_path)
     return path_join(parent_path, child_path)
 
 
-def delete_file(file_path):
+def delete_file(file_path: str) -> None:
+    """若 ``file_path`` 对应文件存在则删除。"""
     if exists_file(file_path):
         info('file exist and delete')
         os.remove(file_path)
 
 
-def exists_dir(file_dir, mkdir=False):
+def exists_dir(file_dir: str, mkdir: bool = False) -> bool:
+    """判断目录是否存在，必要时可自动创建。"""
     return exists(file_dir=file_dir, mkdir=mkdir, mode='path')
 
 
-def exists_file(file_path, mkdir=False):
+def exists_file(file_path: str, mkdir: bool = False) -> bool:
+    """判断文件是否存在，必要时自动创建其所在目录。"""
     return exists(file_path=file_path, mkdir=mkdir, mode='file')
 
 
-def exists(file_path=None, file_dir=None, file_name=None, mode='file', mkdir=False):
+def exists(
+    file_path: str | None = None,
+    file_dir: str | None = None,
+    file_name: str | None = None,
+    mode: str = 'file',
+    mkdir: bool = False,
+) -> bool:
     """
     文件或者目录是否存在，不存在是否需要新建
     :param file_path: 文件路径
@@ -102,27 +123,30 @@ def exists(file_path=None, file_dir=None, file_name=None, mode='file', mkdir=Fal
     return False
 
 
-def exist_and_create(file_dir):
+def exist_and_create(file_dir: str) -> None:
+    """目录不存在时创建，存在时什么都不做。"""
     if os.path.exists(file_dir) and os.path.isdir(file_dir):
         return
 
     os.makedirs(file_dir)
-    return
 
 
-def _file_path(path):
+def _file_path(path: str) -> str:
+    """返回 ``path`` 所在目录。"""
     return os.path.dirname(path)
 
 
-def _file_name(path):
+def _file_name(path: str) -> str:
+    """返回 ``path`` 的文件名部分。"""
     return os.path.basename(path)
 
 
-def makedirs(name, mode=0o777, exist_ok=False):
+def makedirs(name: str, mode: int = 0o777, exist_ok: bool = False) -> None:
+    """递归创建目录，等价于 ``os.makedirs``。"""
     os.makedirs(name, mode=mode, exist_ok=exist_ok)
 
 
-def meta(file_dir, file_name=None, deep=1):
+def meta(file_dir: str, file_name: str | None = None, deep: int = 1) -> dict:
     """
     返回文件的基本信息
     :param file_dir: 路径
@@ -139,7 +163,7 @@ def meta(file_dir, file_name=None, deep=1):
     }
 
 
-def list_file(file_dir, deep=1):
+def list_file(file_dir: str, deep: int = 1) -> list[str]:
     """
     返回这个目录下所有的文件，深度为deep
     :param file_dir: 路径
@@ -158,7 +182,8 @@ def list_file(file_dir, deep=1):
     return result
 
 
-def merge_file(source_file, target_file):
+def merge_file(source_file: list[str], target_file: str) -> None:
+    """把 ``source_file`` 列表中的多个文件按顺序合并写入 ``target_file``。"""
     flag = 0  # 计数器
 
     info("开始。。。。。")
@@ -174,7 +199,8 @@ def merge_file(source_file, target_file):
     info("完成。。。。。")
 
 
-def split_file(source_file, target_dir, max_line=2000000):
+def split_file(source_file: str, target_dir: str, max_line: int = 2000000) -> None:
+    """把 ``source_file`` 按最多 ``max_line`` 行一份，拆分写入 ``target_dir`` 下的多个 CSV 文件。"""
     file_name = _file_name(source_file)
     flag = 0  # 计数器
     name = 1  # 文件名

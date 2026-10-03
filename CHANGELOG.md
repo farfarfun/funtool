@@ -22,6 +22,8 @@
   未废弃的 `logger.warning`。
 - 修复 `path.join_path(child_path)`（省略 `parent_path`）必然 `TypeError` 的问题：原实现把
   默认值 `None` 直接传给 `os.path.join`，现回退为按当前工作目录解析 `child_path`。
+- 为 `path/core.py`、`database/core.py`（`BaseTable`/`SqliteTable`）、`load/core.py`
+  （`DataLoadAndSave`）的全部公开函数/方法补齐类型标注与中文 docstring（#758 finding 6）。
 - 修复示例脚本 `example/example-log.py`、`example/path-example.py`、`example/secret.py` 引用
   不存在的 `logtool`/`pathtool` 模块路径和未导出的 `encrypt`/`decrypt`，并修复
   `example-log.py` 中未定义的裸 `info(...)` 调用（应为 `logger.info(...)`）。
