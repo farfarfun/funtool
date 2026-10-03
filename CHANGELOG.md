@@ -4,8 +4,9 @@
 
 ### 新增
 
-- 增加下载、数据库、时间、路径、加解密 API 的回归测试，覆盖 `join_path` 缺省参数崩溃、
-  `m3u8`/`story` 模块 `logger` 未定义两处回归点。
+- 增加下载、数据库、时间、路径、加解密、`load`/`save` 往返 API 的回归测试，覆盖
+  `join_path` 缺省参数崩溃、`m3u8`/`story` 模块 `logger` 未定义、`SqliteTable`
+  增改查链路等回归点。
 - `funtool.load` 补齐 `DataLoadAndSave` 的包级导出；顶层 `__init__` 补齐 `encrypt`/`decrypt` 导出，
   `funtool.path` 补齐 `join_path` 导出，修复示例脚本的导入错误。
 

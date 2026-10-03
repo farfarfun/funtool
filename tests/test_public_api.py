@@ -3,7 +3,7 @@ import os
 import pytest
 
 from funtool import decrypt, encrypt
-from funtool.database import BaseTable
+from funtool.database import BaseTable, SqliteTable
 from funtool.download import core as download_core
 from funtool.load import DataLoadAndSave
 from funtool.path import join_path, path_parse
@@ -34,6 +34,27 @@ def test_data_load_and_save_exported_from_package():
     assert loader.file_path("a.pkl") == os.path.join("/tmp", "a.pkl")
 
 
+def test_data_load_and_save_pickle_round_trip(tmp_path):
+    loader = DataLoadAndSave(str(tmp_path))
+    payload = {"a": 1, "b": [1, 2, 3]}
+    loader.save(payload, "data.pkl")
+    assert loader.load("data.pkl") == payload
+
+
+def test_data_load_and_save_load_save_generates_once_then_reuses(tmp_path):
+    loader = DataLoadAndSave(str(tmp_path))
+    calls = []
+
+    def generate():
+        calls.append(1)
+        return {"value": len(calls)}
+
+    first = loader.load_save("cache.pkl", fun=generate)
+    second = loader.load_save("cache.pkl", fun=generate)
+    assert first == second == {"value": 1}
+    assert len(calls) == 1
+
+
 def test_time_round_trip():
     value = "2024-01-02 03:04:05"
     assert unix2time(time2unix(value)) == value
@@ -62,6 +83,20 @@ def test_database_requires_columns():
     table = BaseTable(columns=None)
     with pytest.raises(ValueError, match="columns cannot be None"):
         table._properties2kv({})
+
+
+def test_sqlite_table_insert_update_count_select(tmp_path):
+    db_path = tmp_path / "test.db"
+    table = SqliteTable(str(db_path), table_name="t", columns=["id", "name"])
+    table.execute("create table t (id text, name text)")
+
+    table.insert({"id": "1", "name": "a"})
+    assert table.count({"id": "1"}) == 1
+
+    table.update({"name": "b"}, {"id": "1"})
+    rows = table.select("select * from table_name where id='1'")
+    assert rows == [("1", "b")]
+    table.close()
 
 
 def test_m3u8_module_logger_is_defined():
