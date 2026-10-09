@@ -1,4 +1,7 @@
 import os
+from io import BytesIO
+import tarfile
+import zipfile
 
 import pytest
 
@@ -8,6 +11,7 @@ from funtool.download import core as download_core
 from funtool.load import DataLoadAndSave
 from funtool.path import join_path, path_parse
 from funtool.time import time2unix, unix2time
+from funtool.tool.compress import decompress, un_tar, un_zip
 
 
 def test_path_parse_returns_absolute_path():
@@ -113,3 +117,40 @@ def test_story_module_logger_is_defined():
 
     story_module.info("smoke")
     assert story_module.logger is not None
+
+
+def test_un_tar_rejects_member_outside_target_directory(tmp_path):
+    archive = tmp_path / "unsafe.tar"
+    with tarfile.open(archive, "w") as tar:
+        info = tarfile.TarInfo("../outside.txt")
+        data = b"unsafe"
+        info.size = len(data)
+        tar.addfile(info, BytesIO(data))
+
+    with pytest.raises(ValueError, match="越出目标目录"):
+        un_tar(archive, tmp_path / "output")
+    assert not (tmp_path / "outside.txt").exists()
+
+
+def test_un_zip_rejects_member_outside_target_directory(tmp_path):
+    archive = tmp_path / "unsafe.zip"
+    with zipfile.ZipFile(archive, "w") as zip_file:
+        zip_file.writestr("../outside.txt", "unsafe")
+
+    with pytest.raises(ValueError, match="越出目标目录"):
+        un_zip(archive, tmp_path / "output")
+    assert not (tmp_path / "outside.txt").exists()
+
+
+def test_decompress_tar_gz_uses_the_archive_path(tmp_path):
+    archive = tmp_path / "nested" / "safe.tar.gz"
+    archive.parent.mkdir()
+    with tarfile.open(archive, "w:gz") as tar:
+        info = tarfile.TarInfo("safe.txt")
+        data = b"safe"
+        info.size = len(data)
+        tar.addfile(info, BytesIO(data))
+
+    output = tmp_path / "output"
+    decompress(archive, output)
+    assert (output / "safe.txt").read_bytes() == b"safe"
