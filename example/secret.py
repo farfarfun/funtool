@@ -1,12 +1,16 @@
-from funtool import SecretManage, decrypt, encrypt
+"""演示本地加密和解密，不读取或输出任何已保存的密钥。"""
 
-secret = SecretManage()
-v = secret.read("drive", "lanzou", 'phpdisk_info')
-print(v)
+import os
+
+from funtool import decrypt, encrypt
 
 
 def run1():
-    text = 'My super secret message'
-    print(encrypt(text))
-    print(encrypt(text))
-    print(decrypt(encrypt(text)))
+    text = os.environ.get("FUNTOOL_EXAMPLE_SECRET", "My super secret message")
+    encrypted = encrypt(text)
+    assert decrypt(encrypted) == text
+    print("加密和解密成功")
+
+
+if __name__ == "__main__":
+    run1()

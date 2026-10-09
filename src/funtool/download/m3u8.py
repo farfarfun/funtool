@@ -67,7 +67,7 @@ class m3u8Dataset:
         self.conn.close()
 
     def print(self):
-        print(self.cursor.rowcount)
+        logger.info(self.cursor.rowcount)
 
     def test(self):
         res = self.execute(
@@ -81,7 +81,7 @@ class m3u8Dataset:
             """select * from  {}""".format(self.table_name))
 
         for line in res:
-            print(line)
+            logger.info(line)
 
         return res
 
